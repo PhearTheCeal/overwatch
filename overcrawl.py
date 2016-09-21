@@ -1,7 +1,7 @@
 """ Tool for finding counter data for heroes """
 import urllib2
-import base64
 import os
+import json
 from bs4 import BeautifulSoup
 
 HOST = 'http://www.owfire.com'
@@ -9,26 +9,21 @@ HOST = 'http://www.owfire.com'
 
 def get_soup(url):
     """ Retreieve data from cache, or fetch and cache if missing """
-    cache_name = base64.b64encode(bytes([hash(url)]))
-    if os.path.isfile(cache_name):
-        with open(cache_name) as cache:
-            soup = BeautifulSoup(cache.read(), 'html.parser')
-    else:
-        req = urllib2.Request(url)
-        req.add_header('User-Agent',
-                       'Mozilla/5.0 (X11; Linux i686; rv:10.0)'
-                       + 'Gecko/20100101 Firefox/10.0')
-        resp = urllib2.urlopen(req)
-        html_doc = resp.read()
-        soup = BeautifulSoup(html_doc, 'html.parser')
-        with open(cache_name, 'w') as cache:
-            cache.write(soup.prettify().encode('utf8'))
-
+    req = urllib2.Request(url)
+    req.add_header('User-Agent',
+                   'Mozilla/5.0 (X11; Linux i686; rv:10.0)'
+                   + 'Gecko/20100101 Firefox/10.0')
+    resp = urllib2.urlopen(req)
+    html_doc = resp.read()
+    soup = BeautifulSoup(html_doc, 'html.parser')
     return soup
 
 
 def get_counters():
     """ Return dict of heroes and how well they counter other heroes """
+    if os.path.isfile('.counter_cache'):
+        with open('.counter_cache') as cache:
+            return json.load(cache)
     index_soup = get_soup(HOST + '/overwatch/counters')
     counters = {}
 
@@ -47,6 +42,8 @@ def get_counters():
             winrate2 = 1.0 - counters[counter][hero]
             counters[hero][counter] = (winrate1 + winrate2) / 2.0
             counters[counter][hero] = 1 - ((winrate1 + winrate2) / 2.0)
+    with open('.counter_cache', 'w') as cache:
+        json.dump(counters, cache)
     return counters
 
 

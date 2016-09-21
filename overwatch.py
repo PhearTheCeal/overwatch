@@ -49,10 +49,12 @@ SUPPORT = set(['lucio', 'symmetra', 'mercy', 'ana', 'zenyatta'])
 HEALERS = SUPPORT.difference(set(['symmetra']))
 DPS = OFFENSE.union(DEFENSE)
 
-JACOB = set(['reaper', 'mccree', 'roadhog', 'dva', 'junkrat', 'reinhardt', 'bastion', 'zenyatta', 'lucio'])
-KEVIN = set(['bastion', 'soldier-76', 'reinhardt', 'mei', 'zenyatta', 'winston', 'zarya'])
-DAVID = set(['dva', 'roadhog', 'mercy', 'mccree', 'tracer', 'soldier-76', 'lucio', 'pharah', 'ana'])
-CRITTER = set(['zenyatta', 'pharah', 'reinhardt', 'bastion', 'torbjorn'])
+KOK = {
+    "Jacob": set(['reaper', 'mccree', 'roadhog', 'dva', 'junkrat', 'reinhardt', 'bastion', 'zenyatta', 'lucio']),
+    "Kevin": set(['bastion', 'soldier-76', 'reinhardt', 'mei', 'zenyatta', 'winston', 'zarya']),
+    "David": set(['dva', 'roadhog', 'mercy', 'mccree', 'tracer', 'soldier-76', 'lucio', 'pharah', 'ana']),
+    "Critter": set(['zenyatta', 'pharah', 'reinhardt', 'bastion', 'torbjorn'])
+}
 
 
 def main():
@@ -60,31 +62,19 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('random', nargs='+')
 
-    parser.add_argument('--jacob', action='store_true')
-    parser.add_argument('--kevin', action='store_true')
-    parser.add_argument('--david', action='store_true')
-    parser.add_argument('--critter', action='store_true')
+    parser.add_argument('--jacob', dest='players', action='append_const', const='Jacob')
+    parser.add_argument('--kevin', dest='players', action='append_const', const='Kevin')
+    parser.add_argument('--david', dest='players', action='append_const', const='David')
+    parser.add_argument('--critter', dest='players', action='append_const', const='Critter')
     args = parser.parse_args()
 
     player_choices = []
     weighted_pool = {}
     pick_pool = {}
-    if args.jacob:
-        player_choices.append(JACOB)
-        weighted_pool['jacob'] = Counter()
-        pick_pool['jacob'] = Counter()
-    if args.kevin:
-        player_choices.append(KEVIN)
-        weighted_pool['kevin'] = Counter()
-        pick_pool['kevin'] = Counter()
-    if args.david:
-        player_choices.append(DAVID)
-        weighted_pool['david'] = Counter()
-        pick_pool['david'] = Counter()
-    if args.critter:
-        player_choices.append(CRITTER)
-        weighted_pool['critter'] = Counter()
-        pick_pool['critter'] = Counter()
+    for player in args.players:
+        player_choices.append(KOK[player])
+        weighted_pool[player] = Counter()
+        pick_pool[player] = Counter()
     for random_hero in args.random:
         player_choices.append([random_hero])
 
@@ -106,34 +96,16 @@ def main():
             print " ".join(team), weak['winrate']
             printed_top_team = True
 
-        if args.jacob:
-            weighted_pool['jacob'] += Counter({k: weak['winrate'] for k in team - set(args.random) & JACOB})
-            pick_pool['jacob'] += Counter((team - set(args.random) & JACOB))
-        if args.david:
-            weighted_pool['david'] += Counter({k: weak['winrate'] for k in team - set(args.random) & DAVID})
-            pick_pool['david'] += Counter((team - set(args.random) & DAVID))
-        if args.kevin:
-            weighted_pool['kevin'] += Counter({k: weak['winrate'] for k in team - set(args.random) & KEVIN})
-            pick_pool['kevin'] += Counter((team - set(args.random) & KEVIN))
-        if args.critter:
-            weighted_pool['critter'] += Counter({k: weak['winrate'] for k in team - set(args.random) & CRITTER})
-            pick_pool['critter'] += Counter((team - set(args.random) & CRITTER))
-    if args.jacob:
-        print 'Jacob'
-        for hero in sorted(weighted_pool['jacob'], reverse=True, key=lambda n: weighted_pool['jacob'][n] / pick_pool['jacob'][n]):
-            print '\t', hero, weighted_pool['jacob'][hero] / pick_pool['jacob'][hero]
-    if args.kevin:
-        print 'Kevin'
-        for hero in sorted(weighted_pool['kevin'], reverse=True, key=lambda n: weighted_pool['kevin'][n] / pick_pool['kevin'][n]):
-            print '\t', hero, weighted_pool['kevin'][hero] / pick_pool['kevin'][hero]
-    if args.david:
-        print 'David'
-        for hero in sorted(weighted_pool['david'], reverse=True, key=lambda n: weighted_pool['david'][n] / pick_pool['david'][n]):
-            print '\t', hero, weighted_pool['david'][hero] / pick_pool['david'][hero]
-    if args.critter:
-        print 'Critter'
-        for hero in sorted(weighted_pool['critter'], reverse=True, key=lambda n: weighted_pool['critter'][n] / pick_pool['critter'][n]):
-            print '\t', hero, weighted_pool['critter'][hero] / pick_pool['critter'][hero]
+        for player in args.players:
+            weighted_pool[player] += Counter({k: weak['winrate'] for k in team - set(args.random) & KOK[player]})
+            pick_pool[player] += Counter((team - set(args.random) & KOK[player]))
+
+    for player in args.players:
+        print player
+        for hero in sorted(weighted_pool[player],
+                           reverse=True,
+                           key=lambda n: weighted_pool[player][n] / pick_pool[player][n]):
+            print '\t', hero, weighted_pool[player][hero] / pick_pool[player][hero]
 
 
 if __name__ == '__main__':

@@ -76,7 +76,7 @@ def main():
                       itertools.product(JACOB, KEVIN, DAVID, CRITTER, [args.random1], [args.random2])]
     for team in sort_by_weakest_link(find_teams(6)):
         team_set = set(team)
-        if any(team_set.intersection(role) != 2 for role in (TANKS, HEALERS, DPS)):
+        if any(len(team_set.intersection(role)) != 2 for role in (TANKS, HEALERS, DPS)):
             continue
         if not Counter(team) in possible_teams:
             continue

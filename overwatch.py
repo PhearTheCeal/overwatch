@@ -2,7 +2,6 @@
 
 import itertools
 import argparse
-from collections import Counter
 from overcrawl import get_counters
 from overrank import get_rankings
 
@@ -67,18 +66,19 @@ CRITTER = ['zenyatta', 'pharah', 'reinhardt', 'bastion']
 def main():
     """ Find team based on two randoms """
     parser = argparse.ArgumentParser()
-    parser.add_argument('random1')
-    parser.add_argument('random2')
+    parser.add_argument('rand1')
+    parser.add_argument('rand2')
     args = parser.parse_args()
 
-    possible_teams = [Counter(s)
-                      for s in
-                      itertools.product(JACOB, KEVIN, DAVID, CRITTER, [args.random1], [args.random2])]
-    for team in sort_by_weakest_link(find_teams(6)):
+    possible_teams = sort_by_weakest_link(set(s)
+                                          for s in
+                                          itertools.product(JACOB, KEVIN, DAVID, CRITTER, [args.rand1], [args.rand2])
+                                          if len(set(s)) == len(s))
+    possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
+
+    for team in possible_teams:
         team_set = set(team)
         if any(len(team_set.intersection(role)) != 2 for role in (TANKS, HEALERS, DPS)):
-            continue
-        if not Counter(team) in possible_teams:
             continue
         weak = weakest_link(team)
         print "{} --- WEAKEST LINK {} against {} {} --- POWER LEVEL {}".format(

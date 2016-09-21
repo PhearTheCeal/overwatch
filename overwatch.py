@@ -59,8 +59,8 @@ DPS = OFFENSE.union(DEFENSE)
 
 JACOB = ['reaper', 'mccree', 'roadhog', 'dva', 'junkrat', 'reinhardt', 'bastion', 'zenyatta', 'lucio']
 KEVIN = ['bastion', 'soldier-76', 'reinhardt', 'mei', 'zenyatta', 'winston', 'zarya']
-DAVID = ['dva', 'roadhog', 'mercy']  # , 'soldier-76', 'lucio', 'pharah', 'ana']
-CRITTER = ['zenyatta', 'pharah', 'reinhardt', 'bastion']
+DAVID = ['dva', 'roadhog', 'mercy', 'mccree', 'tracer']  # , 'soldier-76', 'lucio', 'pharah', 'ana']
+CRITTER = ['zenyatta', 'pharah', 'reinhardt', 'bastion', 'torbjorn']
 
 
 def main():

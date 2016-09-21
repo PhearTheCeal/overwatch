@@ -1,5 +1,4 @@
 """ Overwatch team finding tool. """
-# pylint: disable=too-many-branches,too-many-statements
 
 import itertools
 import argparse

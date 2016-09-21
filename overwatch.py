@@ -5,15 +5,6 @@ import argparse
 from collections import Counter
 from random import shuffle
 from overcrawl import get_counters
-from overrank import get_rankings
-
-COUNTERS = get_counters()
-RANK = get_rankings()
-
-
-def sum_rank(team):
-    """ Team power level """
-    return sum(RANK[h] for h in team)
 
 
 def weakest_link(team):
@@ -40,8 +31,9 @@ def weakest_link(team):
 
 def sort_by_weakest_link(teams):
     """ Sort by weakest link then by power level """
-    return sorted(teams, reverse=True, key=lambda t: (weakest_link(t)['winrate'], sum_rank(t)))
+    return sorted(teams, reverse=True, key=lambda t: weakest_link(t)['winrate'])
 
+COUNTERS = get_counters()
 TANKS = set(['dva', 'reinhardt', 'roadhog', 'winston', 'zarya'])
 OFFENSE = set(['genji', 'pharah', 'reaper', 'mccree', 'soldier-76', 'tracer'])
 DEFENSE = set(['bastion', 'hanzo', 'junkrat', 'mei', 'torbjorn', 'widowmaker'])

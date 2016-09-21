@@ -49,7 +49,7 @@ def weakest_link(team):
 
 def sort_by_weakest_link(teams):
     """ Sort by weakest link then by power level """
-    return sorted(teams, key=lambda t: (weakest_link(t)['winrate'], sum_rank(t)))[::-1]
+    return sorted(teams, reverse=True, key=lambda t: (weakest_link(t)['winrate'], sum_rank(t)))
 
 TANKS = set(['dva', 'reinhardt', 'roadhog', 'winston', 'zarya'])
 OFFENSE = set(['genji', 'pharah', 'reaper', 'mccree', 'soldier-76', 'tracer'])

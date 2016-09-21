@@ -67,18 +67,23 @@ def main():
     args = parser.parse_args()
 
     player_choices = []
+    weighted_pool = {}
     pick_pool = {}
     if args.jacob:
         player_choices.append(JACOB)
+        weighted_pool['jacob'] = Counter()
         pick_pool['jacob'] = Counter()
     if args.kevin:
         player_choices.append(KEVIN)
+        weighted_pool['kevin'] = Counter()
         pick_pool['kevin'] = Counter()
     if args.david:
         player_choices.append(DAVID)
+        weighted_pool['david'] = Counter()
         pick_pool['david'] = Counter()
     if args.critter:
         player_choices.append(CRITTER)
+        weighted_pool['critter'] = Counter()
         pick_pool['critter'] = Counter()
     for random_hero in args.random:
         player_choices.append([random_hero])
@@ -102,29 +107,33 @@ def main():
             printed_top_team = True
 
         if args.jacob:
+            weighted_pool['jacob'] += Counter({k: weak['winrate'] for k in team - set(args.random) & JACOB})
             pick_pool['jacob'] += Counter((team - set(args.random) & JACOB))
         if args.david:
-            pick_pool['david'] += Counter((team - set(args.random)& DAVID))
+            weighted_pool['david'] += Counter({k: weak['winrate'] for k in team - set(args.random) & DAVID})
+            pick_pool['david'] += Counter((team - set(args.random) & DAVID))
         if args.kevin:
+            weighted_pool['kevin'] += Counter({k: weak['winrate'] for k in team - set(args.random) & KEVIN})
             pick_pool['kevin'] += Counter((team - set(args.random) & KEVIN))
         if args.critter:
+            weighted_pool['critter'] += Counter({k: weak['winrate'] for k in team - set(args.random) & CRITTER})
             pick_pool['critter'] += Counter((team - set(args.random) & CRITTER))
     if args.jacob:
         print 'Jacob'
-        for hero in sorted(pick_pool['jacob'], reverse=True, key=lambda n: pick_pool['jacob'][n]):
-            print '\t', hero, pick_pool['jacob'][hero]
+        for hero in sorted(weighted_pool['jacob'], reverse=True, key=lambda n: weighted_pool['jacob'][n] / pick_pool['jacob'][n]):
+            print '\t', hero, weighted_pool['jacob'][hero] / pick_pool['jacob'][hero]
     if args.kevin:
         print 'Kevin'
-        for hero in sorted(pick_pool['kevin'], reverse=True, key=lambda n: pick_pool['kevin'][n]):
-            print '\t', hero, pick_pool['kevin'][hero]
+        for hero in sorted(weighted_pool['kevin'], reverse=True, key=lambda n: weighted_pool['kevin'][n] / pick_pool['kevin'][n]):
+            print '\t', hero, weighted_pool['kevin'][hero] / pick_pool['kevin'][hero]
     if args.david:
         print 'David'
-        for hero in sorted(pick_pool['david'], reverse=True, key=lambda n: pick_pool['david'][n]):
-            print '\t', hero, pick_pool['david'][hero]
+        for hero in sorted(weighted_pool['david'], reverse=True, key=lambda n: weighted_pool['david'][n] / pick_pool['david'][n]):
+            print '\t', hero, weighted_pool['david'][hero] / pick_pool['david'][hero]
     if args.critter:
         print 'Critter'
-        for hero in sorted(pick_pool['critter'], reverse=True, key=lambda n: pick_pool['critter'][n]):
-            print '\t', hero, pick_pool['critter'][hero]
+        for hero in sorted(weighted_pool['critter'], reverse=True, key=lambda n: weighted_pool['critter'][n] / pick_pool['critter'][n]):
+            print '\t', hero, weighted_pool['critter'][hero] / pick_pool['critter'][hero]
 
 
 if __name__ == '__main__':

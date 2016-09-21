@@ -4,6 +4,7 @@
 import itertools
 import argparse
 from collections import Counter
+from random import shuffle
 from overcrawl import get_counters
 from overrank import get_rankings
 
@@ -52,7 +53,7 @@ DPS = OFFENSE.union(DEFENSE)
 KOK = {
     "Jacob": set(['reaper', 'mccree', 'roadhog', 'dva', 'junkrat', 'reinhardt', 'bastion', 'zenyatta', 'lucio']),
     "Kevin": set(['bastion', 'soldier-76', 'reinhardt', 'mei', 'zenyatta', 'winston', 'zarya']),
-    "David": set(['dva', 'roadhog', 'mercy', 'mccree', 'tracer', 'soldier-76', 'lucio', 'pharah', 'ana']),
+    "David": set(['dva', 'roadhog', 'mercy', 'mccree', 'tracer', 'soldier-76', 'lucio']),
     "Critter": set(['zenyatta', 'pharah', 'reinhardt', 'bastion', 'torbjorn'])
 }
 
@@ -61,6 +62,7 @@ def main():
     """ Find team based on two randoms """
     parser = argparse.ArgumentParser()
     parser.add_argument('random', nargs='+')
+    parser.add_argument('--mastery', action='store_true')
 
     parser.add_argument('--jacob', dest='players', action='append_const', const='Jacob')
     parser.add_argument('--kevin', dest='players', action='append_const', const='Kevin')
@@ -68,12 +70,14 @@ def main():
     parser.add_argument('--critter', dest='players', action='append_const', const='Critter')
     args = parser.parse_args()
 
+    if args.mastery:
+        for player in KOK:
+            KOK[player] = set(COUNTERS.keys())
+
     player_choices = []
-    weighted_pool = {}
     pick_pool = {}
     for player in args.players:
         player_choices.append(KOK[player])
-        weighted_pool[player] = Counter()
         pick_pool[player] = Counter()
     for random_hero in args.random:
         player_choices.append([random_hero])
@@ -85,11 +89,15 @@ def main():
     possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
 
     printed_top_team = False
+    thresh = None
     for team in possible_teams:
         if any(len(team.intersection(role)) < 1 for role in (TANKS, HEALERS)):
             continue
+
         weak = weakest_link(team)
-        if weak['winrate'] <= 0.5:
+        if thresh is None:
+            thresh = weak['winrate']
+        if weak['winrate'] < thresh:
             break
 
         if not printed_top_team:
@@ -97,15 +105,15 @@ def main():
             printed_top_team = True
 
         for player in args.players:
-            weighted_pool[player] += Counter({k: weak['winrate'] for k in team - set(args.random) & KOK[player]})
             pick_pool[player] += Counter((team - set(args.random) & KOK[player]))
 
+    shuffle(args.players)
     for player in args.players:
         print player
-        for hero in sorted(weighted_pool[player],
+        for hero in sorted(pick_pool[player],
                            reverse=True,
-                           key=lambda n: weighted_pool[player][n] / pick_pool[player][n]):
-            print '\t', hero, weighted_pool[player][hero] / pick_pool[player][hero]
+                           key=lambda n: pick_pool[player][n]):
+            print '\t', hero, pick_pool[player][hero]
 
 
 if __name__ == '__main__':

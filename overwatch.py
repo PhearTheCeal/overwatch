@@ -89,13 +89,18 @@ def main():
                                           if len(set(s)) == len(s))
     possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
 
-    print " ".join(possible_teams[0])
+    printed_top_team = False
     for team in possible_teams:
         if any(len(team.intersection(role)) < 1 for role in (TANKS, HEALERS)):
             continue
         weak = weakest_link(team)
         if weak['winrate'] <= 0.5:
             break
+
+        if not printed_top_team:
+            print " ".join(team), weak['winrate']
+            printed_top_team = True
+
         if args.jacob:
             pick_pool['jacob'] += Counter((team - set(args.random) & JACOB))
         if args.david:

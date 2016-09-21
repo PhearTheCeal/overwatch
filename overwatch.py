@@ -97,13 +97,13 @@ def main():
         if weak['winrate'] <= 0.5:
             break
         if args.jacob:
-            pick_pool['jacob'] += Counter(team & JACOB)
+            pick_pool['jacob'] += Counter((team - set(args.random) & JACOB))
         if args.david:
-            pick_pool['david'] += Counter(team & DAVID)
+            pick_pool['david'] += Counter((team - set(args.random)& DAVID))
         if args.kevin:
-            pick_pool['kevin'] += Counter(team & KEVIN)
+            pick_pool['kevin'] += Counter((team - set(args.random) & KEVIN))
         if args.critter:
-            pick_pool['critter'] += Counter(team & CRITTER)
+            pick_pool['critter'] += Counter((team - set(args.random) & CRITTER))
     if args.jacob:
         print 'Jacob'
         for hero in sorted(pick_pool['jacob'], reverse=True, key=lambda n: pick_pool['jacob'][n]):

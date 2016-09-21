@@ -14,16 +14,6 @@ def sum_rank(team):
     return sum(RANK[h] for h in team)
 
 
-def sort_teams_by_rank(teams):
-    """ Sort by power level """
-    return sorted(teams, reverse=True, key=sum_rank)
-
-
-def find_teams(size):
-    """ All team of size with no repeats """
-    return itertools.combinations(COUNTERS.keys(), size)
-
-
 def weakest_link(team):
     """
     Returns dict {'winrate': weakest_winrate, 'hero': link, 'counter': link_breaker}
@@ -66,23 +56,39 @@ CRITTER = ['zenyatta', 'pharah', 'reinhardt', 'bastion', 'torbjorn']
 def main():
     """ Find team based on two randoms """
     parser = argparse.ArgumentParser()
-    parser.add_argument('rand1')
-    parser.add_argument('rand2')
+    parser.add_argument('random', nargs='+')
+
+    parser.add_argument('--jacob', action='store_true')
+    parser.add_argument('--kevin', action='store_true')
+    parser.add_argument('--david', action='store_true')
+    parser.add_argument('--critter', action='store_true')
     args = parser.parse_args()
+
+    player_choices = []
+    if args.jacob:
+        player_choices.append(JACOB)
+    if args.kevin:
+        player_choices.append(KEVIN)
+    if args.david:
+        player_choices.append(DAVID)
+    if args.critter:
+        player_choices.append(CRITTER)
+    for random_hero in args.random:
+        player_choices.append([random_hero])
 
     possible_teams = sort_by_weakest_link(set(s)
                                           for s in
-                                          itertools.product(JACOB, KEVIN, DAVID, CRITTER, [args.rand1], [args.rand2])
+                                          itertools.product(*player_choices)
                                           if len(set(s)) == len(s))
     possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
 
     for team in possible_teams:
         team_set = set(team)
-        if any(len(team_set.intersection(role)) != 2 for role in (TANKS, HEALERS, DPS)):
+        if any(len(team_set.intersection(role)) < 1 for role in (TANKS, HEALERS)):
             continue
         weak = weakest_link(team)
         print "{} --- WEAKEST LINK {} against {} {} --- POWER LEVEL {}".format(
-                ' '.join(team), weak['hero'], weak['counter'], weak['winrate'], sum_rank(team))
+                ' '.join(sorted(team)), weak['hero'], weak['counter'], weak['winrate'], sum_rank(team))
 
 
 if __name__ == '__main__':

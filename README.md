@@ -1,2 +1,2 @@
 # Usage:
-`python overwatch.py <HERO1> <HERO2>` List teams to complement two random heroes
+`python overwatch.py [random_heros...]` List teams to complement given random heroes

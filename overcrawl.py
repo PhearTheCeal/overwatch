@@ -2,7 +2,6 @@
 import urllib2
 import base64
 import os
-import pprint
 from bs4 import BeautifulSoup
 
 HOST = 'http://www.owfire.com'
@@ -51,5 +50,14 @@ def get_counters():
     return counters
 
 
+def main():
+    """ print hero counters """
+    counters = get_counters()
+    for hero in counters:
+        print hero
+        for enemy, winrate in sorted(counters[hero].items(), key=lambda n: n[1]):
+            print '\t', enemy, winrate
+
+
 if __name__ == "__main__":
-    pprint.pprint(get_counters())
+    main()

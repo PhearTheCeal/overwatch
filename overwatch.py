@@ -43,7 +43,7 @@ DPS = OFFENSE.union(DEFENSE)
 
 KOK = {
     "Jacob": set(['reaper', 'mccree', 'roadhog', 'dva', 'junkrat', 'reinhardt', 'bastion', 'zenyatta', 'lucio']),
-    "Kevin": set(['bastion', 'soldier-76', 'reinhardt', 'mei', 'zenyatta', 'winston', 'zarya']),
+    "Kevin": set(['bastion', 'soldier-76', 'reinhardt', 'mei', 'zenyatta', 'winston', 'zarya', 'mccree']),
     "David": set(['dva', 'roadhog', 'mercy', 'ana', 'tracer', 'soldier-76', 'lucio']),
     "Critter": set(['zenyatta', 'pharah', 'reinhardt', 'bastion', 'torbjorn'])
 }

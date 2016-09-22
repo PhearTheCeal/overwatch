@@ -2,6 +2,7 @@
 import urllib2
 import os
 import json
+import sys
 from bs4 import BeautifulSoup
 
 HOST = 'http://www.owfire.com'
@@ -50,7 +51,8 @@ def get_counters():
 def main():
     """ print hero counters """
     counters = get_counters()
-    for hero in counters:
+    requested = counters if len(sys.argv) < 2 else sys.argv[1:]
+    for hero in requested:
         print hero
         for enemy, winrate in sorted(counters[hero].items(), key=lambda n: n[1]):
             print '\t', enemy, winrate

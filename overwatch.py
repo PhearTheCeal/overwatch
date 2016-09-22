@@ -54,6 +54,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('random', nargs='+')
     parser.add_argument('--mastery', action='store_true')
+    parser.add_argument('--inclusive', action='store_true')
 
     parser.add_argument('--jacob', dest='players', action='append_const', const='Jacob')
     parser.add_argument('--kevin', dest='players', action='append_const', const='Kevin')
@@ -80,7 +81,7 @@ def main():
     possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
 
     printed_top_team = False
-    thresh = None
+    thresh = 0.5000000000001 if args.inclusive else None
     for team in possible_teams:
         if any(len(team.intersection(role)) < 1 for role in (TANKS, HEALERS)):
             continue

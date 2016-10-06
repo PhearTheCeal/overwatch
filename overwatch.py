@@ -42,7 +42,7 @@ HEALERS = SUPPORT.difference(set(['symmetra']))
 DPS = OFFENSE.union(DEFENSE)
 
 KOK = {
-    "Jacob": set(['reaper', 'mccree', 'roadhog', 'dva', 'junkrat', 'reinhardt', 'bastion', 'zenyatta', 'lucio']),
+    "Jacob": set(['reaper', 'mccree', 'roadhog', 'dva', 'junkrat', 'reinhardt', 'bastion', 'zenyatta', 'lucio', 'zarya']),
     "Kevin": set(['bastion', 'soldier-76', 'reinhardt', 'mei', 'zenyatta', 'winston', 'zarya', 'mccree']),
     "David": set(['dva', 'roadhog', 'mercy', 'ana', 'tracer', 'soldier-76', 'lucio']),
     "Critter": set(['zenyatta', 'pharah', 'reinhardt', 'bastion', 'torbjorn'])
@@ -68,6 +68,7 @@ def main():
 
     player_choices = []
     pick_pool = {}
+    args.players = args.players or []
     for player in args.players:
         player_choices.append(KOK[player])
         pick_pool[player] = Counter()
@@ -93,7 +94,7 @@ def main():
             break
 
         if not printed_top_team:
-            print " ".join(team), weak['winrate']
+            print " ".join(team), weak['winrate'], weak['counter']
             printed_top_team = True
 
         for player in args.players:

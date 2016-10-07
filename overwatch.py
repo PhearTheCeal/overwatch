@@ -55,6 +55,7 @@ def main():
     parser.add_argument('random', nargs='+')
     parser.add_argument('--mastery', action='store_true')
     parser.add_argument('--inclusive', action='store_true')
+    parser.add_argument('--no-meta', action='store_true')
 
     parser.add_argument('--jacob', dest='players', action='append_const', const='Jacob')
     parser.add_argument('--kevin', dest='players', action='append_const', const='Kevin')
@@ -84,8 +85,9 @@ def main():
     printed_top_team = False
     thresh = 0.5000000000001 if args.inclusive else None
     for team in possible_teams:
-        if any(len(team.intersection(role)) < 1 for role in (TANKS, HEALERS)):
-            continue
+        if not args.no_meta:
+            if any(len(team.intersection(role)) != 2 for role in (TANKS, HEALERS, DPS)):
+                continue
 
         weak = weakest_link(team)
         if thresh is None:

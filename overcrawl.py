@@ -1,5 +1,5 @@
 """ Tool for finding counter data for heroes """
-import urllib2
+import urllib
 import os
 import json
 import sys
@@ -10,11 +10,11 @@ HOST = 'http://www.owfire.com'
 
 def get_soup(url):
     """ Retreieve data from cache, or fetch and cache if missing """
-    req = urllib2.Request(url)
+    req = urllib.Request(url)
     req.add_header('User-Agent',
                    'Mozilla/5.0 (X11; Linux i686; rv:10.0)'
                    + 'Gecko/20100101 Firefox/10.0')
-    resp = urllib2.urlopen(req)
+    resp = urllib.urlopen(req)
     html_doc = resp.read()
     soup = BeautifulSoup(html_doc, 'html.parser')
     return soup
@@ -53,9 +53,9 @@ def main():
     counters = get_counters()
     requested = counters if len(sys.argv) < 2 else sys.argv[1:]
     for hero in requested:
-        print hero
+        print(hero)
         for enemy, winrate in sorted(counters[hero].items(), key=lambda n: n[1]):
-            print '\t', enemy, winrate
+            print('\t', enemy, winrate)
 
 
 if __name__ == "__main__":

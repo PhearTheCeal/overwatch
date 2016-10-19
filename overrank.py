@@ -43,7 +43,7 @@ def page_rank(G, s=0.85, maxerr=0.0000000000001):
     while True:
         ro = r.copy()
         # calculate each pagerank at a time
-        for i in xrange(0, n):
+        for i in range(0, n):
             # inlinks of state i
             Ii = np.array(M[:, i].todense())[:, 0]
             # account for sink states
@@ -75,7 +75,7 @@ def main():
     heroes = sorted(ALL_HEROES, key=lambda n: ranks[n])[::-1]
 
     for hero in heroes:
-        print "{:16s} {}".format(hero, int(1000*ranks[hero]))
+        print("{:16s} {}".format(hero, int(1000*ranks[hero])))
 
 if __name__ == '__main__':
     main()

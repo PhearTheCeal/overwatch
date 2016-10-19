@@ -96,7 +96,7 @@ def main():
             break
 
         if not printed_top_team:
-            print " ".join(team), weak['winrate'], weak['counter']
+            print(" ".join(team), weak['winrate'], weak['counter'])
             printed_top_team = True
 
         for player in args.players:
@@ -104,11 +104,11 @@ def main():
 
     shuffle(args.players)
     for player in args.players:
-        print player
+        print(player)
         for hero in sorted(pick_pool[player],
                            reverse=True,
                            key=lambda n: pick_pool[player][n]):
-            print '\t', hero, pick_pool[player][hero]
+            print('\t', hero, pick_pool[player][hero])
 
 
 if __name__ == '__main__':

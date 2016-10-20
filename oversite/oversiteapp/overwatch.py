@@ -50,31 +50,17 @@ KOK = {
 }
 
 
-def find_teams(arg_list):
+def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
     """ Find team based on two randoms """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('random', nargs='+')
-    parser.add_argument('--mastery', action='store_true')
-    parser.add_argument('--inclusive', action='store_true')
-    parser.add_argument('--no-meta', action='store_true')
-
-    parser.add_argument('--jacob', dest='players', action='append_const', const='Jacob')
-    parser.add_argument('--kevin', dest='players', action='append_const', const='Kevin')
-    parser.add_argument('--david', dest='players', action='append_const', const='David')
-    parser.add_argument('--critter', dest='players', action='append_const', const='Critter')
-    args = parser.parse_args(arg_list)
-
-    if args.mastery:
-        for player in KOK:
-            KOK[player] = set(COUNTERS.keys())
+    players = players or {}
+    randoms = randoms or []
 
     player_choices = []
     pick_pool = {}
-    args.players = args.players or []
-    for player in args.players:
-        player_choices.append(KOK[player])
+    for player in players:
+        player_choices.append(players[player])
         pick_pool[player] = Counter()
-    for random_hero in args.random:
+    for random_hero in randoms:
         player_choices.append([random_hero])
 
     possible_teams = sort_by_weakest_link(set(s)
@@ -83,10 +69,9 @@ def find_teams(arg_list):
                                           if len(set(s)) == len(s))
     possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
 
-    printed_top_team = False
-    thresh = 0.5000000000001 if args.inclusive else None
+    thresh = 0.5000000000001 if inclusive else None
     for team in possible_teams:
-        if not args.no_meta:
+        if not no_meta:
             if any(len(team.intersection(role)) != 2 for role in (TANKS, HEALERS, DPS)):
                 continue
 
@@ -96,23 +81,7 @@ def find_teams(arg_list):
         if weak['winrate'] < thresh:
             break
 
-        if not printed_top_team:
-            print(" ".join(team), weak['winrate'], weak['counter'])
-            printed_top_team = True
-
-        for player in args.players:
-            pick_pool[player] += Counter((team - set(args.random) & KOK[player]))
+        for player in players:
+            pick_pool[player] += Counter((team - set(randoms) & KOK[player]))
 
     return pick_pool
-
-
-if __name__ == '__main__':
-    pools = find_teams(sys.argv[1:])
-    players = list(pools.keys())
-    shuffle(players)
-    for player in players:
-        print(player)
-        for hero in sorted(pools[player],
-                           reverse=True,
-                           key=lambda n: pools[player][n]):
-            print('\t', hero, pools[player][hero])

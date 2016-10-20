@@ -1,5 +1,5 @@
 """ Tool for finding counter data for heroes """
-import urllib
+import urllib.request
 import os
 import json
 import sys
@@ -10,11 +10,11 @@ HOST = 'http://www.owfire.com'
 
 def get_soup(url):
     """ Retreieve data from cache, or fetch and cache if missing """
-    req = urllib.Request(url)
+    req = urllib.request.Request(url)
     req.add_header('User-Agent',
                    'Mozilla/5.0 (X11; Linux i686; rv:10.0)'
                    + 'Gecko/20100101 Firefox/10.0')
-    resp = urllib.urlopen(req)
+    resp = urllib.request.urlopen(req)
     html_doc = resp.read()
     soup = BeautifulSoup(html_doc, 'html.parser')
     return soup

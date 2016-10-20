@@ -5,7 +5,7 @@ import argparse
 import sys
 from collections import Counter
 from random import shuffle
-from overcrawl import get_counters
+from .overcrawl import get_counters
 
 
 def weakest_link(team):

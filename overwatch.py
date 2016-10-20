@@ -2,6 +2,7 @@
 
 import itertools
 import argparse
+import sys
 from collections import Counter
 from random import shuffle
 from overcrawl import get_counters
@@ -49,7 +50,7 @@ KOK = {
 }
 
 
-def main():
+def find_teams(arg_list):
     """ Find team based on two randoms """
     parser = argparse.ArgumentParser()
     parser.add_argument('random', nargs='+')
@@ -61,7 +62,7 @@ def main():
     parser.add_argument('--kevin', dest='players', action='append_const', const='Kevin')
     parser.add_argument('--david', dest='players', action='append_const', const='David')
     parser.add_argument('--critter', dest='players', action='append_const', const='Critter')
-    args = parser.parse_args()
+    args = parser.parse_args(arg_list)
 
     if args.mastery:
         for player in KOK:
@@ -102,14 +103,16 @@ def main():
         for player in args.players:
             pick_pool[player] += Counter((team - set(args.random) & KOK[player]))
 
-    shuffle(args.players)
-    for player in args.players:
-        print(player)
-        for hero in sorted(pick_pool[player],
-                           reverse=True,
-                           key=lambda n: pick_pool[player][n]):
-            print('\t', hero, pick_pool[player][hero])
+    return pick_pool
 
 
 if __name__ == '__main__':
-    main()
+    pools = find_teams(sys.argv[1:])
+    players = list(pools.keys())
+    shuffle(players)
+    for player in players:
+        print(player)
+        for hero in sorted(pools[player],
+                           reverse=True,
+                           key=lambda n: pools[player][n]):
+            print('\t', hero, pools[player][hero])

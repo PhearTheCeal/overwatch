@@ -1,13 +1,22 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .overwatch import find_teams
+from . import overwatch
 
 def index(request):
-    return HttpResponse("Hello world!")
+    return render(request, 'index.html', {})
 
 def team_builder(request):
     return HttpResponse("GET = {}".format(dict(request.GET)))
 
-def counters(request):
-    return HttpResponse("This will be an index of heroes. Clicking takes you to counter/hero and shows counters.")
+def counters(request, hero=None):
+    if hero in overwatch.COUNTERS.keys():
+        counters = dict(overwatch.COUNTERS[hero])
+        counters = {k: "{0:.1f}".format(round(100*v,1)) for k,v in counters.items()}
+        return render(request,
+                      'hero_counters.html',
+                      {'hero': hero, 'counters': counters})
+    elif hero:
+        return HttpResponse("{} isn't a hero".format(hero))
+    else:
+        return render(request, 'counters.html', {'hero_list': overwatch.COUNTERS.keys()})

@@ -1,0 +1,11 @@
+<head>
+    {% load static %}
+    <script src="{% static 'js/preferences.js' %}"></script>
+</head>
+<h2>Player Preferences</h2>
+<h3>Add new player</h3>
+<form id="new_player" action="">
+    Name: <input name='player_name' type='text'>
+    Hero Preferences: {% for hero in hero_list %} <input name="hero_pref" type='checkbox' value='{{hero}}'>{{hero|capfirst}} {% endfor %}
+</form>
+<ul id="players"></ul>

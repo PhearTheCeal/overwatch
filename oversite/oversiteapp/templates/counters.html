@@ -1,0 +1,6 @@
+<h2>Find Hero Counters</h2>
+<ul>
+{% for hero in hero_list %}
+    <li><a href="{% url 'counters' hero %}/">{{ hero|capfirst }}</a></li>
+{% endfor %}
+</ul>

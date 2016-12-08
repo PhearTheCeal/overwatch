@@ -6,8 +6,16 @@ from . import overwatch
 def index(request):
     return render(request, 'index.html', {})
 
+def preferences(request):
+    return render(request,
+                  'preferences.html',
+                  {'hero_list': overwatch.COUNTERS.keys()})
+
 def team_builder(request):
-    return HttpResponse("GET = {}".format(dict(request.GET)))
+    if request.method == 'GET':
+        return HttpResponse("welcome to the index")
+    elif request.method == 'POST':
+        return HttpResponse("i suppose you expect something fancy?")
 
 def counters(request, hero=None):
     if hero in overwatch.COUNTERS.keys():

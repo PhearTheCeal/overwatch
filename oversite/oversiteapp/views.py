@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.http import HttpResponse
 
@@ -13,9 +14,12 @@ def preferences(request):
 
 def team_builder(request):
     if request.method == 'GET':
-        return HttpResponse("welcome to the index")
+        return render(request, "team_builder.html")
     elif request.method == 'POST':
-        return HttpResponse("i suppose you expect something fancy?")
+        players = json.loads(request.POST.get('player_json'), {})
+        teams = overwatch.find_teams(players, [], True, True)
+        teams = {k: dict(v) for k, v in teams.items()}
+        return render(request, 'team_builder.html', {'teams': teams})
 
 def counters(request, hero=None):
     if hero in overwatch.COUNTERS.keys():

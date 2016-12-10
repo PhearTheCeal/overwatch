@@ -1,0 +1,19 @@
+<head>
+    {% load static %}
+    <script src="{% static 'js/team_builder.js' %}"></script>
+</head>
+<body>
+    <form id='players' method='POST'>
+        {% csrf_token %}
+        <h3>Players</h3>
+        <input type='submit'>
+    </form>
+{% for player, pool in teams.items %}
+    <h4>{{ player }}</h4>
+    <ul>
+    {% for hero, num in pool.items %}
+        <li>{{ hero }} - {{ num }}</li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+</body>

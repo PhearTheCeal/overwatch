@@ -1,10 +1,7 @@
 """ Overwatch team finding tool. """
 
 import itertools
-import argparse
-import sys
 from collections import Counter
-from random import shuffle
 from .overcrawl import get_counters
 
 
@@ -36,18 +33,11 @@ def sort_by_weakest_link(teams):
 
 COUNTERS = get_counters()
 TANKS = set(['dva', 'reinhardt', 'roadhog', 'winston', 'zarya'])
-OFFENSE = set(['genji', 'pharah', 'reaper', 'mccree', 'soldier-76', 'tracer'])
+OFFENSE = set(['genji', 'pharah', 'reaper', 'mccree', 'soldier-76', 'tracer', 'sombra'])
 DEFENSE = set(['bastion', 'hanzo', 'junkrat', 'mei', 'torbjorn', 'widowmaker'])
 SUPPORT = set(['lucio', 'symmetra', 'mercy', 'ana', 'zenyatta'])
 HEALERS = SUPPORT.difference(set(['symmetra']))
 DPS = OFFENSE.union(DEFENSE)
-
-KOK = {
-    "Jacob": set(['reaper', 'mccree', 'roadhog', 'dva', 'junkrat', 'reinhardt', 'bastion', 'zenyatta', 'lucio', 'zarya']),
-    "Kevin": set(['bastion', 'soldier-76', 'reinhardt', 'mei', 'zenyatta', 'winston', 'zarya', 'mccree']),
-    "David": set(['dva', 'roadhog', 'mercy', 'ana', 'tracer', 'soldier-76', 'lucio']),
-    "Critter": set(['zenyatta', 'pharah', 'reinhardt', 'bastion', 'torbjorn'])
-}
 
 
 def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
@@ -82,6 +72,6 @@ def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
             break
 
         for player in players:
-            pick_pool[player] += Counter((team - set(randoms) & KOK[player]))
+            pick_pool[player] += Counter((team - set(randoms) & set(players[player])))
 
     return pick_pool

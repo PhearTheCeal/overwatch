@@ -25,7 +25,7 @@ def counters(request, hero=None):
     if hero in overwatch.COUNTERS.keys():
         counters = dict(overwatch.COUNTERS[hero])
         counters = {k: "{0:.1f}".format(round(100*v, 1)) for k, v in counters.items()}
-        counter_items = sorted(counters.items(), key=lambda n: n[1])
+        counter_items = sorted(counters.items(), key=lambda n: float(n[1]))
         return render(request,
                       'hero_counters.html',
                       {'hero': hero, 'counter_items': counter_items})

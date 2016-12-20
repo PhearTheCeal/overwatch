@@ -9,44 +9,51 @@ from bs4 import BeautifulSoup
 HOST = 'http://www.owfire.com'
 
 
-def get_soup(url, cache={}):
-    """ Retreieve data from cache, or fetch and cache if missing """
-    if cache.get(url):
-        return cache.get(url)
+def get_soup(url):
+    """ Request url, parse into soup, return """
     req = urllib.request.Request(url)
     req.add_header('User-Agent',
                    'Mozilla/5.0 (X11; Linux i686; rv:10.0)'
                    + 'Gecko/20100101 Firefox/10.0')
     resp = urllib.request.urlopen(req)
     html_doc = resp.read()
-    soup = BeautifulSoup(html_doc, 'html.parser')
-    cache[url] = soup
-    return soup
+    return BeautifulSoup(html_doc, 'html.parser')
 
-def cache_soup(url):
-    """ Ensure url is cached """
-    get_soup(url)
+
+def get_hero_data(url):
+    """ Get hero counter data based on url """
+    soup = get_soup(url)
+    hero_name = url.split('/')[-2]
+
+    hero_data = []
+    for desc in soup.select('.counters')[0].select('.desc'):
+        counter_hero = desc.select('.comments')[0].get('href').split('/')[-1]
+        up_votes = float(desc.select('.up')[0].text.strip())
+        down_votes = float(desc.select('.down')[0].text.strip())
+        hero_data.append({'up': up_votes, 'down': down_votes, 'counter_hero': counter_hero})
+
+    return {hero_name: hero_data}
+
 
 def get_counters():
     """ Return dict of heroes and how well they counter other heroes """
     if os.path.isfile('.counter_cache'):
         with open('.counter_cache') as cache:
             return json.load(cache)
-    index_soup = get_soup(HOST + '/overwatch/counters')
     counters = {}
 
+    index_soup = get_soup(HOST + '/overwatch/counters')
     pool = Pool()
-    pool.map(cache_soup, list(HOST + link.get('href') for link in index_soup.select('.heroes a')))
+    hero_data = pool.map(get_hero_data, (HOST + link.get('href')
+                                         for link in index_soup.select('.heroes a')))
 
-    for link in index_soup.select('.heroes a'):
-        url = link.get("href")
-        soup = get_soup(HOST + url)
-        hero_name = url.split('/')[-2]
+    for hero in hero_data:
+        hero_name = list(hero.keys())[0]
         counters[hero_name] = {hero_name: 0.5}
-        for desc in soup.select('.counters')[0].select('.desc'):
-            counter_hero = desc.select('.comments')[0].get('href').split('/')[-1]
-            up_votes = float(desc.select('.up')[0].text.strip())
-            down_votes = float(desc.select('.down')[0].text.strip())
+        for counter in list(hero.values())[0]:
+            counter_hero = counter['counter_hero']
+            up_votes = counter['up']
+            down_votes = counter['down']
             counters[hero_name][counter_hero] = up_votes / (up_votes + down_votes)
 
     for hero in counters:

@@ -1,4 +1,5 @@
 <h2>{{ hero|capfirst }}</h2>
+<h4>{{ hero|capfirst }}'s win-rate against:</h4>
 <ul>
 {% for counter,winrate in counter_items %}
     <li><a href="{% url 'counters' counter %}/">{{ counter|capfirst }}</a> - {{ winrate }}%</li>

@@ -10,7 +10,7 @@ def index(request):
 def preferences(request):
     return render(request,
                   'preferences.html',
-                  {'hero_list': overwatch.COUNTERS.keys()})
+                  {'hero_list': sorted(overwatch.COUNTERS.keys())})
 
 def team_builder(request):
     if request.method == 'GET':

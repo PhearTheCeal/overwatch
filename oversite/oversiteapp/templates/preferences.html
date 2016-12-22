@@ -1,11 +1,32 @@
 <head>
     {% load static %}
     <script src="{% static 'js/preferences.js' %}"></script>
+    <style>
+        #new_player {
+            float: left;
+            width: 40%;
+            border: solid black 3px;
+            margin: 30px;
+            padding: 10px
+        }
+        #players {
+            border: solid black 3px;
+        }
+    </style>
 </head>
 <h2>Player Preferences</h2>
-<h3>Add new player</h3>
 <form id="new_player" action="">
+    <h3>Add new player</h3>
+    <input type="submit" value="Add">
+    <br>
     Name: <input name='player_name' type='text'>
-    Hero Preferences: {% for hero in hero_list %} <input name="hero_pref" type='checkbox' value='{{hero}}'>{{hero|capfirst}} {% endfor %}
+    <br>
+    Hero Preferences:
+{% for hero in hero_list %}
+    <div>
+        <input id='{{hero}}' name="hero_pref" type='checkbox' value='{{hero}}'>
+        <label for='{{hero}}'><img src="{% static 'img/' %}{{hero}}.png"></label>
+    </div>
+{% endfor %}
 </form>
 <ul id="players"></ul>

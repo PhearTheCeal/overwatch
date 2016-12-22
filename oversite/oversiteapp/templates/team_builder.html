@@ -5,8 +5,8 @@
 <body>
     <form id='players' method='POST'>
         {% csrf_token %}
-        <h3>Players</h3>
-        <input type='submit'>
+        <h3>Which Players Are In The Team?</h3>
+        <input type='submit' value='Find Team'>
     </form>
 {% for player, pool in teams.items %}
     <h4>{{ player }}</h4>

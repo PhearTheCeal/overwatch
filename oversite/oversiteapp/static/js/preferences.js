@@ -1,4 +1,11 @@
 
+function deletePref(player, element) {
+    var prefs = JSON.parse(localStorage['prefs']);
+    delete prefs[player];
+    localStorage['prefs'] = JSON.stringify(prefs);
+    element.parentElement.removeChild(element);
+}
+
 function listPlayers() {
     var prefs = {};
     if (localStorage['prefs']) {
@@ -12,15 +19,25 @@ function listPlayers() {
     }
 
     // build list of player prefs from localStorage
-    for (var name in prefs) {
-        var pref_el = document.createElement('div');
+    for (let name in prefs) {
+        let pref_el = document.createElement('div');
         pref_el.className = 'pref';
-        pref_el.innerText = name + " prefers";
+        var name_el = document.createElement('span');
+        name_el.innerText = name;
+        name_el.className = 'name';
+        pref_el.appendChild(name_el);
+        var image_list = document.createElement('div');
         for (var hero in prefs[name]) {
             var hero_img = document.createElement("img");
             hero_img.src = "/static/img/" + prefs[name][hero] + ".png";
-            pref_el.appendChild(hero_img);
+            image_list.appendChild(hero_img);
         }
+        var delete_button = document.createElement('div');
+        delete_button.className = 'delete';
+        delete_button.innerText = '✖';
+        delete_button.addEventListener('click', function() { deletePref(name, pref_el); });
+        pref_el.appendChild(delete_button);
+        pref_el.appendChild(image_list);
         playersList.appendChild(pref_el);
     }
 }

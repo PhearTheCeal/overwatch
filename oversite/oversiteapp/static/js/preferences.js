@@ -13,14 +13,15 @@ function listPlayers() {
 
     // build list of player prefs from localStorage
     for (var name in prefs) {
-        var li = document.createElement('li');
-        li.innerText = name + " prefers";
+        var pref_el = document.createElement('div');
+        pref_el.className = 'pref';
+        pref_el.innerText = name + " prefers";
         for (var hero in prefs[name]) {
             var hero_img = document.createElement("img");
             hero_img.src = "/static/img/" + prefs[name][hero] + ".png";
-            li.appendChild(hero_img);
+            pref_el.appendChild(hero_img);
         }
-        playersList.appendChild(li);
+        playersList.appendChild(pref_el);
     }
 }
 

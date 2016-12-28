@@ -2,15 +2,21 @@
     {% load static %}
     <script src="{% static 'js/preferences.js' %}"></script>
     <style>
+        body {
+            margin-left: 230px;
+        }
         #new_player {
             float: left;
-            width: 40%;
-            border: solid black 3px;
-            margin: 30px;
+            width: 200px;
+            border: solid black;
+            border-width: 1px 3px;
+            margin-left: -215px;
             padding: 10px
         }
-        #players {
-            border: solid black 3px;
+        div.pref {
+            border: solid black;
+            border-width: 1px 3px;
+            margin-left: 15px;
         }
     </style>
 </head>
@@ -29,4 +35,4 @@
     </div>
 {% endfor %}
 </form>
-<ul id="players"></ul>
+<div id="players"></div>

@@ -56,8 +56,10 @@ function savePlayer(e) {
     for (var i = 0; i < hero_prefs.length; i++) {
         if (hero_prefs[i].checked) {
             prefs[playerName].push(hero_prefs[i].value);
+            hero_prefs[i].checked = false;
         }
     }
+    form.elements['player_name'].value = "";
 
     localStorage['prefs'] = JSON.stringify(prefs);
 

@@ -1,19 +1,38 @@
 <head>
     {% load static %}
+    <script>
+        HEROES = [
+        {% for hero in heroes %}
+            '{{ hero }}',
+        {% endfor %}
+        ]
+    </script>
     <script src="{% static 'js/team_builder.js' %}"></script>
+    <style>
+        .builder_input {
+            display: inline-block;
+            border: solid black 1px;
+            margin: 5px;
+            padding: 5px;
+            vertical-align: top;
+        }
+    </style>
 </head>
 <body>
-    <form id='players' method='POST'>
-        {% csrf_token %}
-        <h3>Which Players Are In The Team?</h3>
-        <input type='submit' value='Find Team'>
+    <form id='builder_form' method='POST' action="/team_builder_res/">
+    {% csrf_token %}
+        <div>
+            <div class='builder_input' id='players'>
+                <h3>Which Players Are In The Team?</h3>
+            </div>
+            <div class='builder_input' id='randoms'>
+                <h3>Random Teammates?</h3>
+            </div>
+            <div class='builder_input'>
+                <h3>2/2/2 Meta?</h3>
+                <input type='checkbox' name='meta'>Yes
+            </div>
+        </div>
+        <input type='submit' value='Find Team' style='display: block'>
     </form>
-{% for player, pool in teams.items %}
-    <h4>{{ player }}</h4>
-    <ul>
-    {% for hero, num in pool.items %}
-        <li>{{ hero }} - {{ num }}</li>
-    {% endfor %}
-    </ul>
-{% endfor %}
 </body>

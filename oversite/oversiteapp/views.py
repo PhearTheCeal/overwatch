@@ -13,13 +13,14 @@ def preferences(request):
                   {'hero_list': sorted(overwatch.COUNTERS.keys())})
 
 def team_builder(request):
-    if request.method == 'GET':
-        return render(request, "team_builder.html")
-    elif request.method == 'POST':
-        players = json.loads(request.POST.get('player_json'), {})
-        teams = overwatch.find_teams(players, [], True, True)
-        teams = {k: dict(v) for k, v in teams.items()}
-        return render(request, 'team_builder.html', {'teams': teams})
+    return render(request, "team_builder.html", {'heroes': sorted(overwatch.COUNTERS.keys())})
+
+def team_builder_res(request):
+    players = json.loads(request.POST.get('player_json'), {})
+    randoms = request.POST.getlist('random')
+    teams = overwatch.find_teams(players, randoms, True, not request.POST.get('meta'))
+    teams = {k: sorted(v.items()) for k, v in teams.items()}
+    return render(request, 'team_builder_res.html', {'teams': teams})
 
 def counters(request, hero=None):
     if hero in overwatch.COUNTERS.keys():
@@ -32,4 +33,4 @@ def counters(request, hero=None):
     elif hero:
         return HttpResponse("{} isn't a hero".format(hero))
     else:
-        return render(request, 'counters.html', {'hero_list': overwatch.COUNTERS.keys()})
+        return render(request, 'counters.html', {'hero_list': sorted(overwatch.COUNTERS.keys())})

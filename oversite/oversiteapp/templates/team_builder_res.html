@@ -1,0 +1,9 @@
+<button onclick='function(){window.history.back();}'>Back</button>
+{% for player, pool in teams.items %}
+    <h4>{{ player }}</h4>
+    <ul>
+    {% for hero, num in pool %}
+        <li>{{ hero }} - {{ num }}</li>
+    {% endfor %}
+    </ul>
+{% endfor %}

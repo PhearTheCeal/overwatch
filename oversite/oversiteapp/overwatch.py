@@ -56,16 +56,19 @@ def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
     player_choices = []
     pick_pool = {}
     for player in players:
-        player_choices.append(players[player])
+        player_choices.append(set(players[player]))
         pick_pool[player] = Counter()
     for random_hero in randoms:
-        player_choices.append([random_hero])
+        player_choices.append(set([random_hero]))
 
-    possible_teams = sort_by_weakest_link(set(s)
-                                          for s in
-                                          itertools.product(*player_choices)
-                                          if len(set(s)) == len(s))
-    possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
+    team_size = len(randoms) + len(players)
+    hero_pool = set()
+    for choice in player_choices:
+        hero_pool |= choice
+
+    possible_teams = [set(t) for t in itertools.combinations(hero_pool, team_size)]
+    possible_teams = [t for t in possible_teams if all(x & t for x in player_choices)]
+    possible_teams = sort_by_weakest_link(possible_teams)
     if not no_meta:
         possible_teams = [team for team in possible_teams
                           if all(len(team.intersection(role)) == 2 for role in (TANKS, SUPPORT, DPS))]

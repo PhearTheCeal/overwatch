@@ -1,7 +1,7 @@
 """ Tool for finding the PageRank of heroes """
 import numpy as np
 from scipy.sparse import csc_matrix
-from overcrawl import get_counters
+from .overcrawl import get_counters
 
 COUNTERS = get_counters()
 ALL_HEROES = list(COUNTERS.keys())

@@ -8,14 +8,14 @@ function buildRandomsInput(e) {
             sum++;
         }
     }
-    if (sum > 6) {
+    if (sum > document.getElementById('team_size').value) {
         if (e) {
             e.preventDefault();
         }
         return false;
     }
 
-    var diff = 6 - sum;
+    var diff = document.getElementById('team_size').value - sum;
     while (document.getElementsByName('random').length != diff) {
         if (document.getElementsByName('random').length < diff) {
             // add input
@@ -102,6 +102,7 @@ function ready(fn) {
 ready(function() {
     var form = document.getElementById('builder_form');
     form.addEventListener('submit', sendJson, false);
+    document.getElementById('team_size').addEventListener('input', buildRandomsInput);
 
     listPlayers();
     buildRandomsInput();

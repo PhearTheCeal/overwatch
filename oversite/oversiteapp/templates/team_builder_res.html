@@ -1,4 +1,3 @@
-<button onclick='function(){window.history.back();}'>Back</button>
 {% for player, pool in teams.items %}
     <h4>{{ player }}</h4>
     <ul>
@@ -6,4 +5,8 @@
         <li>{{ hero }} - {{ num }}</li>
     {% endfor %}
     </ul>
+{% endfor %}
+<h2>Best Team Comps</h2>
+{% for team, weakest_link, pagerank in top_teams %}
+{{ team }} - Counter power {{ weakest_link }} - PageRank {{ pagerank }}<br>
 {% endfor %}

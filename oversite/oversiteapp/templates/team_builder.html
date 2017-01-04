@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-    <form id='builder_form' method='POST' action="/team_builder_res/">
+    <form id='builder_form' method='POST' action="/team_builder_res/" target='_blank'>
     {% csrf_token %}
         <div>
             <div class='builder_input' id='players'>
@@ -31,6 +31,10 @@
             <div class='builder_input'>
                 <h3>2/2/2 Meta?</h3>
                 <input type='checkbox' name='meta'>Yes
+            </div>
+            <div class='builder_input'>
+                <h3>Team Size</h3>
+                <input name='team_size' id='team_size' type='number' max='6' min='1' value='6' />
             </div>
         </div>
         <input type='submit' value='Find Team' style='display: block'>

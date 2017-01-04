@@ -5,3 +5,9 @@
     <li><a href="{% url 'counters' counter %}/">{{ counter|capfirst }}</a> - {{ winrate }}%</li>
 {% endfor %}
 </ul>
+<h4>{{ hero|capfirst }}'s stats:</h4>
+PageRank: {{ pagerank }}<br>
+Min win-rate: {{ min_winrate }}<br>
+Average win-rate: {{ avg_winrate }}<br>
+Max win-rate: {{ max_winrate }}<br>
+Std-dev win-rate: {{ sd_winrate }}<br>

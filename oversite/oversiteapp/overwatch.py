@@ -3,6 +3,7 @@
 import itertools
 from collections import Counter
 from .overcrawl import get_counters
+from .overrank import get_rankings
 
 
 def weakest_link(team):
@@ -27,10 +28,17 @@ def weakest_link(team):
     return {'winrate': weakest_winrate, 'hero': link, 'counter': link_breaker}
 
 
+def team_pagerank(team):
+    return sum(RANKINGS[hero] for hero in team)
+
 def sort_by_weakest_link(teams):
     """ Sort by weakest link then by power level """
-    return sorted(teams, reverse=True, key=lambda t: weakest_link(t)['winrate'])
+    return sorted(teams, reverse=True, key=lambda t: (weakest_link(t)['winrate'], team_pagerank(t)))
 
+def pretty_percent(number):
+    return "{0:.1f}".format(round(100*number, 1))
+
+RANKINGS = get_rankings()
 COUNTERS = get_counters()
 TANKS = set(['dva', 'reinhardt', 'roadhog', 'winston', 'zarya'])
 OFFENSE = set(['genji', 'pharah', 'reaper', 'mccree', 'soldier-76', 'tracer', 'sombra'])
@@ -58,13 +66,12 @@ def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
                                           itertools.product(*player_choices)
                                           if len(set(s)) == len(s))
     possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
+    if not no_meta:
+        possible_teams = [team for team in possible_teams
+                          if all(len(team.intersection(role)) == 2 for role in (TANKS, HEALERS, DPS))]
 
     thresh = 0.5000000000001 if inclusive else None
     for team in possible_teams:
-        if not no_meta:
-            if any(len(team.intersection(role)) != 2 for role in (TANKS, HEALERS, DPS)):
-                continue
-
         weak = weakest_link(team)
         if thresh is None:
             thresh = weak['winrate']
@@ -74,4 +81,4 @@ def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
         for player in players:
             pick_pool[player] += Counter((team - set(randoms) & set(players[player])))
 
-    return pick_pool
+    return pick_pool, [(", ".join(sorted(list(team))), pretty_percent(weakest_link(team)['winrate']), pretty_percent(team_pagerank(team))) for team in possible_teams[:5]]

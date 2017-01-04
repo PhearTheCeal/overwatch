@@ -68,7 +68,7 @@ def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
     possible_teams = list(k for k, _ in itertools.groupby(possible_teams))
     if not no_meta:
         possible_teams = [team for team in possible_teams
-                          if all(len(team.intersection(role)) == 2 for role in (TANKS, HEALERS, DPS))]
+                          if all(len(team.intersection(role)) == 2 for role in (TANKS, SUPPORT, DPS))]
 
     thresh = 0.5000000000001 if inclusive else None
     for team in possible_teams:

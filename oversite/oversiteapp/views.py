@@ -19,7 +19,8 @@ def team_builder(request):
 def team_builder_res(request):
     players = json.loads(request.POST.get('player_json'), {})
     randoms = request.POST.getlist('random')
-    teams, top = overwatch.find_teams(players, randoms, False, not request.POST.get('meta'))
+    enemies = request.POST.getlist('enemies')
+    teams, top = overwatch.find_teams(players, randoms, False, not request.POST.get('meta'), enemies)
     teams = {k: sorted(v.items(), reverse=True, key=lambda x: (x[1], [0])) for k, v in teams.items()}
     return render(request, 'team_builder_res.html', {'teams': teams, 'top_teams': top})
 

@@ -1,4 +1,22 @@
 
+function buildEnemiesInput() {
+    for (var i = 0; i < HEROES.length; i++) {
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = HEROES[i];
+        checkbox.name = 'enemies';
+        checkbox.checked = true;
+
+        var label = document.createElement('span');
+        label.innerText = HEROES[i].charAt(0).toUpperCase() + HEROES[i].slice(1);
+
+        var div = document.createElement('div');
+        div.appendChild(checkbox);
+        div.appendChild(label);
+        document.getElementById('enemies').appendChild(div);
+    }
+}
+
 function buildRandomsInput(e) {
     var sum = 0;
     var form = document.getElementById("builder_form");
@@ -106,4 +124,5 @@ ready(function() {
 
     listPlayers();
     buildRandomsInput();
+    buildEnemiesInput();
 });

@@ -6,7 +6,7 @@ from .overcrawl import get_counters
 from .overrank import get_rankings
 
 
-def weakest_link(team):
+def weakest_link(team, enemies):
     """
     Returns dict {'winrate': weakest_winrate, 'hero': link, 'counter': link_breaker}
     for the given team.
@@ -14,7 +14,7 @@ def weakest_link(team):
     weakest_winrate = float('inf')
     link = None
     link_breaker = None
-    for counter in COUNTERS:
+    for counter in enemies:
         max_winrate = 0.0
         max_hero = None
         for hero in team:
@@ -31,9 +31,9 @@ def weakest_link(team):
 def team_pagerank(team):
     return sum(RANKINGS[hero] for hero in team)
 
-def sort_by_weakest_link(teams):
+def sort_by_weakest_link(teams, enemies):
     """ Sort by weakest link then by power level """
-    return sorted(teams, reverse=True, key=lambda t: (weakest_link(t)['winrate'], team_pagerank(t)))
+    return sorted(teams, reverse=True, key=lambda t: (weakest_link(t, enemies)['winrate'], team_pagerank(t)))
 
 def pretty_percent(number):
     return "{0:.1f}".format(round(100*number, 1))
@@ -48,10 +48,11 @@ HEALERS = SUPPORT.difference(set(['symmetra']))
 DPS = OFFENSE.union(DEFENSE)
 
 
-def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
+def find_teams(players=None, randoms=None, inclusive=False, no_meta=False, enemies=None):
     """ Find team based on two randoms """
     players = players or {}
     randoms = randoms or []
+    enemies = enemies or COUNTERS.keys()
 
     player_choices = []
     pick_pool = {}
@@ -68,14 +69,14 @@ def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
 
     possible_teams = [set(t) for t in itertools.combinations(hero_pool, team_size)]
     possible_teams = [t for t in possible_teams if all(x & t for x in player_choices)]
-    possible_teams = sort_by_weakest_link(possible_teams)
+    possible_teams = sort_by_weakest_link(possible_teams, enemies)
     if not no_meta:
         possible_teams = [team for team in possible_teams
                           if all(len(team.intersection(role)) == 2 for role in (TANKS, SUPPORT, DPS))]
 
     thresh = 0.5000000000001 if inclusive else None
     for team in possible_teams:
-        weak = weakest_link(team)
+        weak = weakest_link(team, enemies)
         if thresh is None:
             thresh = weak['winrate']
         if weak['winrate'] < thresh:
@@ -84,4 +85,4 @@ def find_teams(players=None, randoms=None, inclusive=False, no_meta=False):
         for player in players:
             pick_pool[player] += Counter((team - set(randoms) & set(players[player])))
 
-    return pick_pool, [(", ".join(sorted(list(team))), pretty_percent(weakest_link(team)['winrate']), pretty_percent(team_pagerank(team))) for team in possible_teams[:5]]
+    return pick_pool, [(", ".join(sorted(list(team))), pretty_percent(weakest_link(team, enemies)['winrate']), pretty_percent(team_pagerank(team))) for team in possible_teams[:5]]

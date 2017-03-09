@@ -2,6 +2,7 @@
 
 import itertools
 import multiprocessing
+import signal
 from collections import Counter
 from .overcrawl import get_counters
 from .overrank import get_rankings
@@ -81,34 +82,43 @@ def gen_possible_teams(args):
     return _gen_possible_teams(*args)
 
 
+class TimeoutError(Exception):
+    pass
+
+
 def _gen_possible_teams(hero, choices, enemies, no_meta):
     results = []
     top_score = 0.0
     enemies_set = set(BIN_HEROES[h] for h in enemies)
-    for team in itertools.product([hero], *choices):
-        # 1. Ensure team has no dupes
-        t = set(team)
-        if len(t) != len(team):
-            continue
-        # 1.5 Ensure meta if enforced
-        if not no_meta:
-            if any(len(t & role) != 2 for role in (TANKS_BIN, DPS_BIN, SUPPORT_BIN)):
+    timeout = 3
+
+    def _sig_alarm(sig, tb):
+        raise TimeoutError("timeout")
+    signal.signal(signal.SIGALRM, _sig_alarm)
+    try:
+        signal.alarm(timeout)
+        for team in itertools.product([hero], *choices):
+            # 1. Ensure team has no dupes
+            t = set(team)
+            if len(t) != len(team):
                 continue
-        # 2. Score team
-        score = weakest_link(team, enemies_set, binary=True, current_best=top_score)
-        if score > top_score:
-            top_score = score
-        if score < top_score:
-            continue
-        # 3. Store results (binary OR together team, combine with store in tuple)
-        """
-        binary = 0
-        for hero in team:
-            binary |= hero
-        results.append((binary, score))
-        """
-        results.append((team, score))
-    # 4. Filter out non-top-teams, return results
+            # 1.5 Ensure meta if enforced
+            if not no_meta:
+                if any(len(t & role) != 2 for role in (TANKS_BIN, DPS_BIN, SUPPORT_BIN)):
+                    continue
+            # 2. Score team
+            score = weakest_link(team, enemies_set, binary=True, current_best=top_score)
+            if score > top_score:
+                top_score = score
+            if score < top_score:
+                continue
+            results.append((team, score))
+
+    except TimeoutError:
+        pass
+
+    signal.alarm(0)
+
     return results
 
 

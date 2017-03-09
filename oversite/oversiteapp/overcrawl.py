@@ -1,5 +1,10 @@
 """ Tool for finding counter data for heroes """
-import urllib.request
+try:
+    from urllib.request import Request
+    from urllib.request import urlopen
+except:
+    from urllib2 import Request
+    from urllib2 import urlopen
 import os
 import json
 import sys
@@ -11,11 +16,11 @@ HOST = 'http://www.owfire.com'
 
 def get_soup(url):
     """ Request url, parse into soup, return """
-    req = urllib.request.Request(url)
+    req = Request(url)
     req.add_header('User-Agent',
                    'Mozilla/5.0 (X11; Linux i686; rv:10.0)'
                    + 'Gecko/20100101 Firefox/10.0')
-    resp = urllib.request.urlopen(req)
+    resp = urlopen(req)
     html_doc = resp.read()
     return BeautifulSoup(html_doc, 'html.parser')
 

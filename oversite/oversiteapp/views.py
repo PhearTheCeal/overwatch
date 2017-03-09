@@ -1,9 +1,15 @@
 import json
-import statistics
+from math import sqrt
 from django.shortcuts import render
 from django.http import HttpResponse
 
 from . import overwatch
+
+
+def stddev(rates):
+    avg = sum(rates) / len(rates)
+    res = sum((x - avg)**2 for x in rates)
+    return sqrt(res / len(rates))
 
 def index(request):
     return render(request, 'index.html', {})
@@ -17,7 +23,7 @@ def team_builder(request):
     return render(request, "team_builder.html", {'heroes': sorted(overwatch.COUNTERS.keys())})
 
 def team_builder_res(request):
-    players = json.loads(request.POST.get('player_json'), {})
+    players = json.loads(request.POST.get('player_json', '{}'))
     randoms = request.POST.getlist('random')
     enemies = request.POST.getlist('enemies')
     teams, top = overwatch.find_teams(players, randoms, False, not request.POST.get('meta'), enemies)
@@ -33,8 +39,8 @@ def counters(request, hero=None):
         avg_win = overwatch.pretty_percent(sum(rates) / len(rates) / 100.0)
         min_win = min(rates)
         max_win = max(rates)
-        sd_win = overwatch.pretty_percent(statistics.stdev(rates) / 100.0)
         pagerank = overwatch.pretty_percent(overwatch.RANKINGS[hero])
+        sd_win = overwatch.pretty_percent(stddev(rates) / 100.0)
         return render(request,
                       'hero_counters.html',
                       {'hero': hero,
